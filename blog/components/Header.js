@@ -15,9 +15,9 @@ const Header = () => (
                         <Icon type="home"/>
                         首页
                     </Menu.Item>
-                    <Menu.Item key="money">
-                        <Icon type="money-collect"/>
-                        理财
+                    <Menu.Item key="article">
+                        <Icon type="read"/>
+                        博文
                     </Menu.Item>
                     <Menu.Item key="life">
                         <Icon type="smile"/>
