@@ -20,7 +20,7 @@ const MyList = () => {
   return (
     <>
       <Head>
-        <title>Home</title>
+        <title>List</title>
       </Head>
       <Header />
       <Row className="comm-main" type="flex" justify="center">
