@@ -1,6 +1,6 @@
 import React from 'react'
 import { Row, Col, Menu, Icon } from 'antd'
-import '../static/components/header.css'
+import '../static/style/components/header.css'
 
 const Header = () => (
     <div className="header">
