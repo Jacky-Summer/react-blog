@@ -7,6 +7,7 @@ import Advert from '../components/Advert'
 import Footer from '../components/Footer'
 import ReactMarkdown from 'react-markdown'
 import MarkNav from 'markdown-navbar'
+import axios from 'axios'
 import 'markdown-navbar/dist/navbar.css'
 import '../static/style/pages/detail.css'
 
@@ -110,7 +111,22 @@ const Detail = () => {
       <Footer />
   </>
   )
+}
 
+Detail.getInitialProps = async (context) => {
+
+    let id = context.query.id
+    console.log(id)
+    const promise = new Promise(resolve => {
+        axios('http://127.0.0.1:7001/default/getArticleById/' + id).then(
+            (res) => {
+                console.log(res)
+                resolve(res.data.data[0])
+            }
+        )
+    })
+
+    return await promise
 }
 
 export default Detail
