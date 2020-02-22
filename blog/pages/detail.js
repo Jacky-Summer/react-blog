@@ -5,57 +5,40 @@ import Header from '../components/Header'
 import Author from '../components/Author'
 import Advert from '../components/Advert'
 import Footer from '../components/Footer'
-import ReactMarkdown from 'react-markdown'
-import MarkNav from 'markdown-navbar'
-import axios from 'axios'
 import 'markdown-navbar/dist/navbar.css'
 import '../static/style/pages/detail.css'
+import 'highlight.js/styles/monokai-sublime.css'
+import MarkNav from 'markdown-navbar'
+import marked from 'marked'
+import hljs from 'highlight.js'
+import axios from 'axios'
+import servicePath from '../config/apiUrl'
+import Tocify from '../components/tocify.tsx'
 
-const Detail = () => {
+
+const Detail = (props) => {
+
+    const renderer  = new marked.Renderer()
+    const tocify = new Tocify()
+    renderer.heading = function(text, level) {
+        const anchor = tocify.add(text, level)
+        return `<a id="${anchor}" href="#${anchor}" class="anchor-fix"><h${level}>${text}</h${level}></a>\n`
+    };
+
+    marked.setOptions({
+        renderer: renderer,
+        pedantic: false,
+        gfm: true,
+        breaks: false,
+        smartLists: true,
+        smartypants: false,
+        sanitize: false,
+        highlight: function(code) {
+            return hljs.highlightAuto(code).value;
+        }
+    });
     
-    let markdown = '# 测试MarkDown语法解析是否生效\n' +
-        '[ **M** ] arkdown + E [ **ditor** ] = **Mditor**  \n' +
-        '> Mditor 是一个简洁、易于集成、方便扩展、期望舒服的编写 markdown 的编辑器，仅此而已... \n\n' +
-        '**这是加粗的文字**\n\n' +
-        '*这是倾斜的文字*`\n\n' +
-        '***这是斜体加粗的文字***\n\n' +
-        '~~这是加删除线的文字~~ \n\n'+
-        '\`console.log(111)\` \n\n'+
-        '> aaaaaaaaa\n' +
-        '>> bbbbbbbbb\n' +
-        '>>> cccccccccc\n'+
-        '***\n\n\n' +
-        '# 1. React Hook\n' +
-        '> aaaaaaaaa\n' +
-        '>> bbbbbbbbb\n' +
-        '# 2. Ant Design\n' +
-        '> aaaaaaaaa\n' +
-        '>> bbbbbbbbb\n' +
-        '>>> cccccccccc\n\n'+
-        '# 3. Egg.js\n' +
-        '> aaaaaaaaa\n' +
-        '>> bbbbbbbbb\n' +
-        '>>> cccccccccc\n\n'+
-        '# 4. Next.js\n' +
-        '> aaaaaaaaa\n' +
-        '>> bbbbbbbbb\n' +
-        '>>> cccccccccc\n\n'+
-        '# 5. React Hook\n' +
-        '> aaaaaaaaa\n' +
-        '>> bbbbbbbbb\n' +
-        '# 6. Ant Design\n' +
-        '> aaaaaaaaa\n' +
-        '>> bbbbbbbbb\n' +
-        '>>> cccccccccc\n\n'+
-        '# 7. Egg.js\n' +
-        '> aaaaaaaaa\n' +
-        '>> bbbbbbbbb\n' +
-        '>>> cccccccccc\n\n'+
-        '# 8. Next.js\n' +
-        '> aaaaaaaaa\n' +
-        '>> bbbbbbbbb\n' +
-        '>>> cccccccccc\n\n'+
-        '``` var a=11; ```'
+    let html = marked(props.article_content)
 
   return (
     <>
@@ -77,18 +60,14 @@ const Detail = () => {
                 </div>
                 <div>
                     <div className="detail-title">
-                    ES6系列之一文彻底弄懂Iterator
+                    {props.title}
                     </div>
                     <div className="list-icon center">
-                        <span><Icon type="calendar" /> 2020-02-15</span>
-                        <span><Icon type="read" /> 博文</span>
-                        <span><Icon type="fire" /> 5498人</span>
+                        <span><Icon type="calendar" /> {props.add_time}</span>
+                        <span><Icon type="read" /> {props.type_name}</span>
+                        <span><Icon type="fire" /> {props.view_count}人</span>
                     </div>
-                    <div className="detail-content" >
-                        <ReactMarkdown
-                            source={markdown}
-                            escapeHtml={false}
-                        />
+                    <div className="detail-content" dangerouslySetInnerHTML={{__html: html}}>    
                     </div>
                 </div>
             </div>
@@ -99,11 +78,9 @@ const Detail = () => {
           <Affix offsetTop={5}>
             <div className="detail-nav comm-box">
                 <div className="nav-title">文章目录</div>
-                <MarkNav
-                    className="article-menu"
-                    source={markdown}
-                    ordered={false}
-                />
+                <div className="toc-list">
+                    {tocify && tocify.render()}
+                </div>
             </div>
           </Affix>
         </Col>
@@ -116,11 +93,9 @@ const Detail = () => {
 Detail.getInitialProps = async (context) => {
 
     let id = context.query.id
-    console.log(id)
     const promise = new Promise(resolve => {
-        axios('http://127.0.0.1:7001/default/getArticleById/' + id).then(
+        axios(servicePath.getArticleById + id).then(
             (res) => {
-                console.log(res)
                 resolve(res.data.data[0])
             }
         )

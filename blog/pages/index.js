@@ -7,11 +7,30 @@ import Advert from '../components/Advert'
 import Footer from '../components/Footer'
 import Link from 'next/link'
 import axios from 'axios'
+import servicePath from '../config/apiUrl'
 import '../static/style/pages/index.css'
+import marked from 'marked'
+import hljs from "highlight.js"
+import 'highlight.js/styles/monokai-sublime.css'
 
 const Home = (list) => {
 
   const [mylist, setMylist] = useState(list.data)
+
+  const renderer  = new marked.Renderer()
+
+  marked.setOptions({
+      renderer: renderer,
+      pedantic: false,
+      gfm: true,
+      breaks: false,
+      smartLists: true,
+      smartypants: false,
+      sanitize: false,
+      highlight: function(code) {
+          return hljs.highlightAuto(code).value;
+      }
+  });
 
   return (
     <>
@@ -33,9 +52,9 @@ const Home = (list) => {
                   <div className="list-icon">
                     <span><Icon type="calendar"/> {item.add_time}</span>
                     <span><Icon type="read"/> {item.type_name}</span>
-                    <span><Icon type="fire"/> {item.view_count}</span>
+                    <span><Icon type="fire"/> {item.view_count} 人</span>
                   </div>
-                  <div className="list-context">{item.context}</div>
+                  <div className="list-context" dangerouslySetInnerHTML={{__html:marked(item.introduce)}}></div>
                 </List.Item>
               )}
           />
@@ -53,7 +72,7 @@ const Home = (list) => {
 
 Home.getInitialProps = async () => {
   const promise = new Promise(resolve => {
-    axios('http://127.0.0.1:7001/default/getArticleList').then(
+    axios(servicePath.getArticleList).then(
       (res) => {
         resolve(res.data)
       }
