@@ -9,6 +9,9 @@ function Main() {
             <Router>
                 <Route path='/' exact component={Login}></Route>
                 <Route path='/index' exact component={AdminIndex}></Route>
+                <Route path='/index/add' exact component={AdminIndex}></Route>
+                <Route path='/index/add/:id' exact component={AdminIndex}></Route>
+                <Route path='/index/list' exact component={AdminIndex}></Route>
             </Router>
         </div>
     )

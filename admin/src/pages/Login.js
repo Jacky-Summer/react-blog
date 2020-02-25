@@ -3,7 +3,7 @@ import { Button, Input, Card, Spin, Icon, message } from 'antd'
 import axios from 'axios'
 import servicePath from '../config/apiUrl'
 import 'antd/dist/antd.css'
-import '../static/login.css'
+import '../static/css/login.css'
 
 function Login(props) {
 
@@ -63,7 +63,7 @@ function Login(props) {
                         placeholder="Enter your userName"
                         onChange={(e) => { setUserName(e.target.value) }}
                     />
-                    <Input 
+                    <Input.Password
                         id="password"
                         className="input-password"
                         size="large"

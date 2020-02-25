@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { Row, Col ,Input, Select ,Button ,DatePicker, message } from 'antd';
 import 'antd/dist/antd.css'
-import '../static/addArticle.css'
+import '../static/css/addArticle.css'
 import marked from 'marked'
 import axios from 'axios'
 import servicePath from '../config/apiUrl'
+import hljs from 'highlight.js'
+import 'highlight.js/styles/monokai-sublime.css'
 
 
 const { Option } = Select;
@@ -19,20 +21,21 @@ function AddArticle(props) {
     const [introducemd,setIntroducemd] = useState()            //简介的markdown内容
     const [introducehtml,setIntroducehtml] = useState('等待编辑') //简介的html内容
     const [showDate,setShowDate] = useState()   //发布日期
-    const [updateDate,setUpdateDate] = useState() //修改日志的日期
     const [typeInfo ,setTypeInfo] = useState([]) // 文章类别信息
     const [selectedType,setSelectType] = useState('请选择类型') //选择的文章类别
 
     marked.setOptions({
         renderer: new marked.Renderer(),
-        gfm: true,
         pedantic: false,
-        sanitize: false,
-        tables: true,
+        gfm: true,
         breaks: false,
         smartLists: true,
         smartypants: false,
-    }); 
+        sanitize: false,
+        highlight: function(code) {
+            return hljs.highlightAuto(code).value;
+        }
+    });
 
     const changeContent = (e) => {
         setArticleContent(e.target.value)
@@ -44,22 +47,6 @@ function AddArticle(props) {
         setIntroducemd(e.target.value)
         let html=marked(e.target.value)
         setIntroducehtml(html)
-    }
-
-    const getTypeInfo = () => {
-        axios({
-            method: 'get',
-            url:servicePath.getTypeInfo,
-            header:{ 'Access-Control-Allow-Origin':'*' },
-            withCredentials: true
-        }).then(res => {
-            if(res.data.data === '没有登录') {
-                localStorage.removeItem('openId')
-                props.history.push('/')  
-            }else {
-                setTypeInfo(res.data.data)
-            }
-        })
     }
 
     const selectTypeHangdler = (value) => {
@@ -93,7 +80,6 @@ function AddArticle(props) {
 
 
         if(articleId == 0){ // 如果等于0说明时新添加，如果不等于0，说明是修改
-            console.log('articleId=:'+articleId)
             dataProps.view_count = Math.ceil(Math.random()*100)+1000
             axios({
                 method:'post',
@@ -130,8 +116,51 @@ function AddArticle(props) {
         }
     }
 
+    
+    const getArticleById = (id) => {
+        axios({
+            method: 'get',
+            url: servicePath.getArticleById + id,
+            withCredentials: true
+        }).then(res => {
+            let articleInfo = res.data.data[0]
+            setArticleTitle(articleInfo.title)
+            setArticleContent(articleInfo.content)
+            let htmlContent = marked(articleInfo.content)
+            setMarkdownContent(htmlContent)
+            setIntroducemd(articleInfo.introduce)
+            let htmlIntroduce = marked(articleInfo.introduce)
+            setIntroducehtml(htmlIntroduce)
+            setShowDate(articleInfo.add_time)
+            setSelectType(articleInfo.type_id)
+        })  
+    }
+
+    const getTypeInfo = () => {
+        axios({
+            method: 'get',
+            url:servicePath.getTypeInfo,
+            header:{ 'Access-Control-Allow-Origin':'*' },
+            withCredentials: true
+        }).then(res => {
+            if(res.data.data === '没有登录') {
+                localStorage.removeItem('openId')
+                props.history.push('/')  
+            }else {
+                setTypeInfo(res.data.data)
+            }
+        })
+    }
+
     useEffect(() => {
         getTypeInfo()
+        //获得文章ID
+        let tmpId = props.match.params.id
+        if(tmpId){
+            setArticleId(tmpId)
+            getArticleById(tmpId)
+        } 
+        
     }, [])
 
     return (
@@ -143,11 +172,12 @@ function AddArticle(props) {
                             <Input 
                                 placeholder="博客标题" 
                                 size="large" 
+                                value={articleTitle}
                                 onChange={e=>{setArticleTitle(e.target.value)}}
                             />
                         </Col>
                         <Col span={4}> 
-                            <Select defaultValue={selectedType} size="large" onChange={selectTypeHangdler}>
+                            <Select value={selectedType} size="large" onChange={selectTypeHangdler}>
                             {
                                 typeInfo.map((item, index) => {
                                     return (
@@ -200,7 +230,7 @@ function AddArticle(props) {
                                 <DatePicker
                                     onChange={(date, dateString) => { setShowDate(dateString) }}
                                     placeholder="发布日期"
-                                    size="large"  
+                                    size="large" 
                                 />
                             </div>
                         </Col>

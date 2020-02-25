@@ -5,6 +5,7 @@
 }
 .author-div div {
     margin-bottom: 1rem;
+    cursor: pointer;
 }
 .author-introduction {
     font-size: .8rem;

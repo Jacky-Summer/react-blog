@@ -5,16 +5,15 @@ import Header from '../components/Header'
 import Author from '../components/Author'
 import Advert from '../components/Advert'
 import Footer from '../components/Footer'
-import 'markdown-navbar/dist/navbar.css'
-import '../static/style/pages/detail.css'
-import 'highlight.js/styles/monokai-sublime.css'
 import MarkNav from 'markdown-navbar'
 import marked from 'marked'
 import hljs from 'highlight.js'
 import axios from 'axios'
 import servicePath from '../config/apiUrl'
 import Tocify from '../components/tocify.tsx'
-
+import 'markdown-navbar/dist/navbar.css'
+import '../static/style/pages/detail.css'
+import 'highlight.js/styles/monokai-sublime.css'
 
 const Detail = (props) => {
 

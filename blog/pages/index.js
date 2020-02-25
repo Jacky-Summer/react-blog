@@ -36,6 +36,7 @@ const Home = (list) => {
     <>
       <Head>
         <title>Home</title>
+        <meta name="referrer" content="no-referrer" /> 
       </Head>
       <Header />
       <Row className="comm-main" type="flex" justify="center">
