@@ -1,7 +1,7 @@
 # react-blog
 React Hook+Next.js+Ant Design+Egg.js开发博客系统
 
-## 本机配置开发环境
+## 运行该项目所需配置的开发环境
 
 该项目的中台搭建需要本地建立mysql数据库, 数据库`react_blog`所包含表如下：
 
@@ -20,3 +20,10 @@ React Hook+Next.js+Ant Design+Egg.js开发博客系统
 - introduce: 文章简介，text类型
 - add_time: 文章发布时间，int(11)类型
 - view_count: 浏览次数， int类型
+
+### admin_user表（用户后台管理表）
+
+- id: 用户id int类型
+- userName: 用户名称 varchar类型
+- password: 用户密码 varchar类型
+
